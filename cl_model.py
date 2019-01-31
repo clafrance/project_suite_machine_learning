@@ -8,59 +8,56 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import RandomForestRegressor
 import pickle
 
+
 model_filename = 'cl_model.sav'
 model_r2_filename = 'cl_model_r2.csv'
-X_filename = 'X.csv'
+
+
+def load_data():
+
+	print("Start loading, cleaning data ...")
+	df_orig = pd.read_csv('cl_Resources/home_value_calc.csv')
+	df_orig = df_orig[~(df_orig == -666666666.0).any(axis=1)]
+	df = df_orig.drop(["Poverty Count", "commute time car", 'Zipcode', 'zip_code','latitude', 'longitude', 'city', 'state', 'county', 'Bachelor holders', 'pop_biz','pop_stem' ], axis=1)
+	df["Population Density"] = df["Population"]/df["Land-Sq-Mi"]
+	print("Finish loading data\n")
+
+	print("Start scaling data ...")
+	X = df.drop("median_home_value", axis=1)
+	y = df["median_home_value"].values.reshape(-1, 1)
+	X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+	print("Finish scaling data\n")
+	return [[X_train, X_test, y_train, y_test], X.keys()]
+
 
 
 ### Only run this function when building the model
 def build_model(model_r2_filename, model_filename):
-	print("Start loading, cleaning data ...")
-	df = pd.read_csv('cl_Resources/census_data.csv')
-	df_land = pd.read_csv('cl_Resources/Zipcode-Population-Density-2010.csv')
-	df_unemployment = pd.read_csv('cl_Resources/Unemployment.csv')
-	df.dropna(inplace=True)
-	df_unemployment.dropna(inplace=True)
 
-	# removes rows that has neg numbers
-	df = df[~(df < 0).any(axis=1)]
-	df = df.join(df_land.set_index('Zipcode'), on='Zipcode')
-	df.dropna(inplace=True)
-	df = df.join(df_unemployment.set_index('Zipcode'), on='Zipcode')
-	df.dropna(inplace=True)
-	df["Population Density"] = df["Population"]/df["Land-Sq-Mi"]
-	df = df.drop("Poverty Count", axis=1)
-	df.drop(columns=['Zipcode'], inplace=True)
-	print("Finish loading data\n")
-
-	print("Start scaling data ...")
-	X = df[["Population", "Median Age", "Household Income", "Per Capita Income", "Poverty Rate", "Land-Sq-Mi", "Unemp Rate", "Population Density"]]
-	y = df["median_home_value"].values.reshape(-1, 1)
-
-	X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
+	data = load_data()[0]
+	X_train = data[0]
+	X_test = data[1]
+	y_train = data[2]
+	y_test = data[3]
 
 	X_scaler = StandardScaler().fit(X_train)
-	# y_scaler = StandardScaler().fit(y_train)
+	y_scaler = StandardScaler().fit(y_train)
 
 	X_train_scaled = X_scaler.transform(X_train)
 	X_test_scaled = X_scaler.transform(X_test)
 
-	# y_train_scaled = y_scaler.transform(y_train)
-	# y_test_scaled = y_scaler.transform(y_test)
-	y_train_scaled = y_train
-	y_test_scaled = y_test
-	print("Finish scaling data\n")
+	y_train_scaled = y_scaler.transform(y_train)
+	y_test_scaled = y_scaler.transform(y_test)
 
 	print("Start building model, this may take a little while ...")
 	rf = RandomForestRegressor(n_estimators=200)
 	rf = rf.fit(X_train_scaled, y_train_scaled)
+
 	r2 = rf.score(X_test_scaled, y_test_scaled)
 
 	model_r2_df = pd.DataFrame(data={'r2': [r2]})
 	model_r2_df.to_csv(model_r2_filename, index=False)
-
-	X.to_csv(X_filename, index=False)
-
+	
 	# save the model
 	pickle.dump(rf, open(model_filename, 'wb'))
 	print("Finish building model\n")
@@ -68,15 +65,26 @@ def build_model(model_r2_filename, model_filename):
 
 
 # This function will call the saved model to make prediction
-# Example of paramater: X_new = [[ 3.48460584, -0.82941627,  0.80809856,  0.34549878, -0.01890773, -0.33548015,  0.2246137 ,  1.35009033]]
-def make_prediction(X_new, model_r2_filename, X_filename):
-	X_keys = pd.read_csv(X_filename).keys()
+# Example of paramater: X_new = [[17423.0, 45.0, 56714.0, 30430.0, 1353.0, 975.0, 8.391207, 479.0, 2.749240, 149, 240, 49, 11.442, 1522.723300]]
+def make_prediction(X_new, model_r2_filename, model_filename):
+
+	data = load_data()
+	X_train = data[0][0]
+	X_test = data[0][1]
+	y_train = data[0][2]
+	y_test = data[0][3]
+
+	X_scaler = StandardScaler().fit(X_train)
+	y_scaler = StandardScaler().fit(y_train)
+
+	X_keys = data[1]
+
+	X_new_scaled = X_scaler.transform(X_new)
 
 	print("Start making prediction ...")
 	loaded_model = pickle.load(open(model_filename, 'rb'))
-	# prediction_scaled = loaded_model.predict(X_new)
-	# prediction = y_scaler.inverse_transform(prediction_scaled)
-	prediction = loaded_model.predict(X_new)
+	prediction_scaled = loaded_model.predict(X_new_scaled)
+	prediction = y_scaler.inverse_transform(prediction_scaled)
 
 	model_r2_df = pd.read_csv(model_r2_filename)
 	r2 = model_r2_df["r2"][0]
