@@ -18,8 +18,9 @@ def load_data():
 	print("Start loading, cleaning data ...")
 	df_orig = pd.read_csv('cl_Resources/home_value_calc.csv')
 	df_orig = df_orig[~(df_orig == -666666666.0).any(axis=1)]
-	df = df_orig.drop(["Poverty Count", "commute time car", 'Zipcode', 'zip_code','latitude', 'longitude', 'city', 'state', 'county', 'Bachelor holders', 'pop_biz','pop_stem' ], axis=1)
+	df = df_orig.drop(["Poverty Count", "commute time car", 'Zipcode', 'zip_code','latitude', 'longitude', 'city', 'state', 'county', 'Bachelor holders', 'pop_biz','pop_stem', 'pop_tech' ], axis=1)
 	df["Population Density"] = df["Population"]/df["Land-Sq-Mi"]
+	df = df.drop("Land-Sq-Mi" , axis=1)
 	print("Finish loading data\n")
 
 	print("Start scaling data ...")
@@ -65,7 +66,7 @@ def build_model(model_r2_filename, model_filename):
 
 
 # This function will call the saved model to make prediction
-# Example of paramater: X_new = [[17423.0, 45.0, 56714.0, 30430.0, 1353.0, 975.0, 8.391207, 479.0, 2.749240, 149, 240, 49, 11.442, 1522.723300]]
+# Example of paramater: X_new = [[ 17423.0,	45.0,	56714.0,	30430.0,	1353.0,	975.0,	8.391207,	479.0,	2.749240,	149,	49,	1522.723300 ]]
 def make_prediction(X_new, model_r2_filename, model_filename):
 
 	data = load_data()
@@ -91,6 +92,6 @@ def make_prediction(X_new, model_r2_filename, model_filename):
 
 	importances = loaded_model.feature_importances_
 	importances_list = sorted(zip(loaded_model.feature_importances_, X_keys), reverse=True)
-	print("Finisn making prediction\n")
+	print("Finish making prediction\n")
 
 	return {"Prediction": prediction[0], "R2": r2, "importance": importances_list}
