@@ -2,6 +2,7 @@
 A machine learning application which will predict house value for a location (zip code) based on the influential factors, like household income, population density, median age, , poverty rate, unemployment rate etc.
 
 How to use it:
+
 0. Download all code from git
 
 1. Uncomment out below line in cl_model.py, run python cl_model.py in order to save the ML model. (ML model is too big to be uploaded)
