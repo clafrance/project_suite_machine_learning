@@ -5,13 +5,8 @@ How to use it:
 
 0. Download all code from git
 
-1. Uncomment out below line in cl_model.py, run python cl_model.py in order to save the ML model to be used by the website. (ML model is too big for git upload, please follow the instruction inside cl_model.py to save the model first!!)
-   
-   build_model(model_r2_filename, model_filename)
-  
-  
-
-  
+1. Run python create_model.py to create ML model.
+    
 2. Run python app.py to renderthe website. Go to your local host to access the page.
 
 3. Upload csv file, please use input1/2/3 in the git directory, as formatting is important.
