@@ -33,36 +33,36 @@ def load_data():
 
 
 
-### Only run this function when building the model
-def build_model(model_r2_filename, model_filename):
+### Building machine model, moved to create_model.py
+# def build_model(model_r2_filename, model_filename):
 
-	data = load_data()[0]
-	X_train = data[0]
-	X_test = data[1]
-	y_train = data[2]
-	y_test = data[3]
+# 	data = load_data()[0]
+# 	X_train = data[0]
+# 	X_test = data[1]
+# 	y_train = data[2]
+# 	y_test = data[3]
 
-	X_scaler = StandardScaler().fit(X_train)
-	y_scaler = StandardScaler().fit(y_train)
+# 	X_scaler = StandardScaler().fit(X_train)
+# 	y_scaler = StandardScaler().fit(y_train)
 
-	X_train_scaled = X_scaler.transform(X_train)
-	X_test_scaled = X_scaler.transform(X_test)
+# 	X_train_scaled = X_scaler.transform(X_train)
+# 	X_test_scaled = X_scaler.transform(X_test)
 
-	y_train_scaled = y_scaler.transform(y_train)
-	y_test_scaled = y_scaler.transform(y_test)
+# 	y_train_scaled = y_scaler.transform(y_train)
+# 	y_test_scaled = y_scaler.transform(y_test)
 
-	print("Start building model, this may take a little while ...")
-	rf = RandomForestRegressor(n_estimators=200)
-	rf = rf.fit(X_train_scaled, y_train_scaled)
+# 	print("Start building model, this may take a little while ...")
+# 	rf = RandomForestRegressor(n_estimators=200)
+# 	rf = rf.fit(X_train_scaled, y_train_scaled)
 
-	r2 = rf.score(X_test_scaled, y_test_scaled)
+# 	r2 = rf.score(X_test_scaled, y_test_scaled)
 
-	model_r2_df = pd.DataFrame(data={'r2': [r2]})
-	model_r2_df.to_csv(model_r2_filename, index=False)
+# 	model_r2_df = pd.DataFrame(data={'r2': [r2]})
+# 	model_r2_df.to_csv(model_r2_filename, index=False)
 	
-	# save the model
-	pickle.dump(rf, open(model_filename, 'wb'))
-	print("Finish building model\n")
+# 	# save the model
+# 	pickle.dump(rf, open(model_filename, 'wb'))
+# 	print("Finish building model\n")
 
 
 
@@ -100,8 +100,8 @@ def make_prediction(X_new, model_r2_filename, model_filename):
 	#return {"Prediction": prediction[0], "R2": r2, "importance": importances_list}
 	return {"Prediction": prediction[0], "R2": r2}
 
-#Step1: Build the model and save it to be used later. Uncomment below line:
+
 #build_model(model_r2_filename, model_filename)
-#Step2: You can test out the model built by un-comment below two lines and run the test sample data:
+
 #X_new = [[29489, 44.2, 116741, 50410, 3755,	1345, 2.261860355, 2.665400658, 244, 51, 1113.044463]]		
 #make_prediction(X_new, model_r2_filename, model_filename)
