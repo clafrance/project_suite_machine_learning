@@ -7,7 +7,7 @@ How to use it:
 
 1. Run python create_model.py to create ML model.
     
-2. Run python app.py to renderthe website. Go to your local host to access the page.
+2. Run python app.py to render the website. Go to your local host to access the page.
 
 3. Upload csv file, please use input1/2/3 in the git directory, as formatting is important.
 
