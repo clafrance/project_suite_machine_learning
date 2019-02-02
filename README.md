@@ -5,7 +5,7 @@ How to use it:
 
 0. Download all code from git
 
-1. Uncomment out below line in cl_model.py, run python cl_model.py in order to save the ML model to be used by the website. (ML model is too big to be uploaded to git, please follow the instruction inside cl_model.py to save the model first!!)
+1. Uncomment out below line in cl_model.py, run python cl_model.py in order to save the ML model to be used by the website. (ML model is too big for git upload, please follow the instruction inside cl_model.py to save the model first!!)
    
    build_model(model_r2_filename, model_filename)
   
