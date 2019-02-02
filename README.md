@@ -10,7 +10,7 @@ How to use it:
 2. Run python app.py to render the website. Go to your local host to access the page.
 
 3. Upload csv file, please use input1/2/3 in the git directory, as formatting is important.
-
-  The detailed column name and more data can be found in the feature.csv 
+    
+    The detailed column name and more data can be found in the feature.csv 
 
 4. Click "Submit" button, enjoy your prediction! :)
